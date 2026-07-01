@@ -1,0 +1,26 @@
+# ─────────────────────────────────────────────
+# Meridian — Dependencies
+# ─────────────────────────────────────────────
+
+# Data
+yfinance>=0.2.40
+pandas>=2.0.0
+numpy>=1.24.0
+
+# Database
+# SQLite is in Python stdlib — no extra dependency
+
+# Analytics
+scipy>=1.10.0
+scikit-learn>=1.3.0
+
+# Visualization
+matplotlib>=3.7.0
+seaborn>=0.13.0
+
+# Web
+flask>=3.0.0
+
+# Testing
+pytest>=7.4.0
+pytest-cov>=4.1.0
