@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+{% block title %}Methodology{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Index Methodology</h1>
+    <p class="subtitle">How the Meridian 50 Index is constructed, maintained, and analyzed</p>
+</div>
+
+<div class="methodology-content">
+
+    <h2>1. Index Construction</h2>
+
+    <h3>Universe Selection</h3>
+    <p>
+        The Meridian 50 Index comprises 50 large-cap US equities selected from the
+        S&P 500, spanning all 11 GICS (Global Industry Classification Standard) sectors.
+        Stocks are chosen for their market capitalization, liquidity, and sector
+        representation to create a diversified benchmark.
+    </p>
+
+    <h3>Weighting Methodology</h3>
+    <p>
+        The index uses <strong>free-float adjusted market capitalization weighting</strong>,
+        the same methodology used by MSCI World, S&P 500, and most major global benchmarks.
+    </p>
+
+    <div class="formula-block">
+        Weight_i = (Price_i × Shares_i × FFF_i) / Σ(Price_j × Shares_j × FFF_j)
+
+        Where:
+          Price_i       = Current share price of stock i
+          Shares_i      = Total shares outstanding
+          FFF_i         = Free-float factor (0 to 1)
+          Σ             = Sum over all constituents j
+    </div>
+
+    <p>
+        The <strong>free-float factor</strong> excludes shares that are not available for
+        public trading: government holdings, strategic cross-holdings, insider/founder
+        stakes, and locked-up shares. This ensures the index reflects investable
+        market capitalization only.
+    </p>
+
+    <h3>The Divisor Method</h3>
+    <p>
+        Index levels are computed using the <strong>divisor method</strong>, which ensures
+        continuity across rebalancing events and corporate actions.
+    </p>
+
+    <div class="formula-block">
+        Index(t) = Σ(P_i(t) × Q_i × FFF_i) / Divisor
+
+        Initial:   Divisor = Σ(P_i(0) × Q_i × FFF_i) / Base_Level
+        Rebalance: D_new = D_old × (New_Numerator / Old_Numerator)
+    </div>
+
+    <p>
+        The divisor absorbs all structural changes (additions, removals, corporate actions)
+        so the index level reflects only market price movements, never artificial jumps
+        from composition changes.
+    </p>
+
+    <h2>2. Rebalancing</h2>
+
+    <p>
+        The index rebalances <strong>quarterly</strong> (every 63 trading days, approximately
+        matching MSCI's February, May, August, November schedule). During rebalancing:
+    </p>
+
+    <ul>
+        <li>Market capitalizations are updated using current prices</li>
+        <li>Weights are recalculated from the new market caps</li>
+        <li>The divisor is adjusted to maintain index continuity</li>
+        <li>Rebalancing history is logged for audit purposes</li>
+    </ul>
+
+    <h2>3. Risk Analytics</h2>
+
+    <h3>Volatility</h3>
+    <p>
+        We compute both <strong>rolling</strong> (simple moving window) and
+        <strong>EWMA</strong> (exponentially weighted) volatility. EWMA gives more
+        weight to recent observations, making it more responsive to changing
+        market conditions.
+    </p>
+
+    <div class="formula-block">
+        Rolling Vol = std(r_t, ..., r_{t-w+1}) × √252
+        EWMA Vol   = ewm_std(r_t, span=w) × √252
+
+        Where:
+          r_t  = log return on day t
+          w    = window length (20 or 60 days)
+          252  = trading days per year (annualization factor)
+    </div>
+
+    <h3>Value at Risk (VaR)</h3>
+    <p>
+        <strong>Historical VaR</strong> at the 95% confidence level: we sort historical
+        daily returns and take the 5th percentile. If 1-day 95% VaR = 2%, then on 95%
+        of trading days, the index loses less than 2%.
+    </p>
+    <p>
+        <strong>Conditional VaR (CVaR / Expected Shortfall)</strong> answers a deeper
+        question: "Given that we're in the worst 5% of days, how bad is it on average?"
+        CVaR is a coherent risk measure and captures tail risk that VaR ignores.
+    </p>
+
+    <h3>Maximum Drawdown</h3>
+    <p>
+        The largest peak-to-trough decline in the index level. This represents the worst
+        cumulative loss an investor would have experienced during the observation period.
+    </p>
+
+    <h2>4. Performance Metrics</h2>
+
+    <div class="info-card">
+        <div class="info-title">Sharpe Ratio</div>
+        <div class="info-body">
+            Risk-adjusted return: <code>(annualized return - risk-free rate) / annualized volatility</code>.
+            A Sharpe ratio above 1.0 is considered good for a long-only equity index.
+        </div>
+    </div>
+
+    <div class="info-card">
+        <div class="info-title">Sortino Ratio</div>
+        <div class="info-body">
+            Like Sharpe, but uses <strong>downside deviation</strong> instead of total volatility.
+            Only penalizes negative returns — upside volatility is not a risk from the investor's perspective.
+        </div>
+    </div>
+
+    <div class="info-card">
+        <div class="info-title">Tracking Error</div>
+        <div class="info-body">
+            The annualized standard deviation of the difference between the index return and the
+            benchmark (SPY) return. Low tracking error means the index closely follows the benchmark.
+        </div>
+    </div>
+
+    <div class="info-card">
+        <div class="info-title">Information Ratio</div>
+        <div class="info-body">
+            Active return divided by tracking error: <code>IR = (R_p - R_b) / TE</code>.
+            Measures how much excess return you get per unit of active risk.
+        </div>
+    </div>
+
+    <h2>5. Factor Analysis</h2>
+
+    <p>
+        We perform <strong>Principal Component Analysis (PCA)</strong> on the return
+        covariance matrix to extract the dominant risk factors driving index returns.
+        This is a simplified version of MSCI's Barra factor model.
+    </p>
+
+    <div class="formula-block">
+        Covariance Matrix: Σ = P · Λ · P^T   (Eigendecomposition)
+
+        Λ = diagonal matrix of eigenvalues (variance per factor)
+        P = matrix of eigenvectors (the principal components)
+
+        Factor 1 ≈ "Market" (all stocks move together)
+        Factor 2 ≈ "Sector rotation" or "Growth vs Value"
+        Factor 3+ ≈ More granular risk dimensions
+    </div>
+
+    <p>
+        The first principal component typically explains 40-60% of total portfolio
+        variance, confirming that "the market" is the dominant risk factor.
+        Subsequent factors capture sector tilts, style exposures, and other
+        systematic risk dimensions.
+    </p>
+
+    <h2>6. Technology Stack</h2>
+
+    <ul>
+        <li><strong>Python</strong> — Core computation (NumPy, Pandas, SciPy)</li>
+        <li><strong>SQLite</strong> — Persistent storage with SQL analytics</li>
+        <li><strong>matplotlib</strong> — Professional chart generation</li>
+        <li><strong>Flask</strong> — Lightweight web server</li>
+        <li><strong>yfinance</strong> — Market data source</li>
+        <li><strong>scikit-learn</strong> — PCA for factor decomposition</li>
+    </ul>
+
+    <h2>7. Data Quality</h2>
+
+    <p>
+        Data integrity is paramount — at MSCI's scale, a single pricing error can
+        misrepresent billions in benchmarked assets. Our data pipeline includes:
+    </p>
+
+    <ul>
+        <li><strong>Validation</strong>: Reject negative prices, flag zero prices</li>
+        <li><strong>Forward-fill</strong>: Handle missing trading days</li>
+        <li><strong>Anomaly detection</strong>: Flag >20% daily moves as potential corporate actions</li>
+        <li><strong>Gap detection</strong>: SQL queries to find missing date ranges</li>
+        <li><strong>Logging</strong>: All anomalies logged with timestamps</li>
+    </ul>
+
+</div>
+{% endblock %}

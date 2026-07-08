@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>{{ index_name }} Dashboard</h1>
+    <p class="subtitle">Market-Cap Weighted Equity Index — Real-time analytics and performance tracking</p>
+</div>
+
+{% if error is defined and error %}
+<div class="error-banner">
+    ⚠ {{ error }}
+</div>
+{% endif %}
+
+{% if metrics %}
+<!-- Key Metrics -->
+<div class="metrics-grid">
+    <div class="metric-card">
+        <div class="metric-label">Index Level</div>
+        <div class="metric-value accent">{{ metrics.current_level }}</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">Total Return</div>
+        <div class="metric-value {{ 'positive' if '+' in metrics.total_return else 'negative' }}">{{ metrics.total_return }}</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">1-Month Return</div>
+        <div class="metric-value {{ 'positive' if '+' in metrics.return_1m else 'negative' }}">{{ metrics.return_1m }}</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">1-Year Return</div>
+        <div class="metric-value {{ 'positive' if '+' in metrics.return_1y else 'negative' }}">{{ metrics.return_1y }}</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">Trading Days</div>
+        <div class="metric-value cyan">{{ metrics.n_trading_days }}</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">Date Range</div>
+        <div class="metric-value" style="font-size: 0.95rem;">{{ metrics.start_date }}<br>{{ metrics.end_date }}</div>
+    </div>
+</div>
+
+<!-- Performance Chart -->
+{% if has_charts %}
+<div class="chart-section">
+    <div class="chart-card">
+        <h3>Cumulative Performance vs Benchmark</h3>
+        <img src="{{ url_for('static', filename='charts/performance.png') }}" alt="Index Performance">
+    </div>
+</div>
+
+<div class="charts-row">
+    <div class="chart-card">
+        <h3>Drawdown from Peak</h3>
+        <img src="{{ url_for('static', filename='charts/drawdown.png') }}" alt="Drawdown">
+    </div>
+    <div class="chart-card">
+        <h3>Sector Allocation</h3>
+        <img src="{{ url_for('static', filename='charts/sectors.png') }}" alt="Sector Weights">
+    </div>
+</div>
+{% else %}
+<div class="chart-card">
+    <div class="empty-state">
+        <div class="empty-icon">📊</div>
+        <p>Charts not generated yet. Run <code>python main.py --all</code> to generate analytics and visualizations.</p>
+    </div>
+</div>
+{% endif %}
+
+{% else %}
+<div class="chart-card">
+    <div class="empty-state">
+        <div class="empty-icon">📈</div>
+        <p>No index data available. Run <code>python main.py --all</code> to fetch data, build the index, and generate analytics.</p>
+    </div>
+</div>
+{% endif %}
+
+<!-- Top Holdings -->
+{% if top_holdings %}
+<div class="table-card">
+    <h3>Top 10 Holdings</h3>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Ticker</th>
+                <th>Name</th>
+                <th>Sector</th>
+                <th>Weight</th>
+                <th>Market Cap ($M)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for h in top_holdings %}
+            <tr>
+                <td class="mono">{{ loop.index }}</td>
+                <td class="mono" style="font-weight: 600; color: var(--text-primary);">{{ h.ticker }}</td>
+                <td>{{ h.name }}</td>
+                <td><span class="badge badge-sector">{{ h.sector }}</span></td>
+                <td class="mono">{{ "%.2f" | format(h.weight * 100) }}%</td>
+                <td class="mono">{{ "{:,.0f}" .format(h.market_cap) }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,576 @@
+/* ═══════════════════════════════════════════════════
+   Meridian — Warm Financial Terminal Theme
+   Pure CSS, no frameworks, no JavaScript
+   
+   Color palette: Deep navy → teal accents → warm amber highlights
+   Inspired by Bloomberg Terminal meets modern design
+   ═══════════════════════════════════════════════════ */
+
+/* ─── CSS Variables / Design Tokens ─── */
+:root {
+    --bg-primary: #08101a;
+    --bg-secondary: #0d1926;
+    --bg-card: #111f32;
+    --bg-card-hover: #162840;
+    --bg-elevated: #1a3050;
+
+    --text-primary: #e4e8ee;
+    --text-secondary: #8b99ae;
+    --text-muted: #5a6b82;
+
+    --teal: #2dd4bf;
+    --teal-dim: #14b8a6;
+    --teal-glow: rgba(45, 212, 191, 0.10);
+
+    --amber: #fbbf24;
+    --amber-dim: #f59e0b;
+    --amber-glow: rgba(251, 191, 36, 0.08);
+
+    --positive: #34d399;
+    --positive-bg: rgba(52, 211, 153, 0.08);
+    --negative: #f87171;
+    --negative-bg: rgba(248, 113, 113, 0.08);
+
+    --border: rgba(255, 255, 255, 0.06);
+    --border-hover: rgba(45, 212, 191, 0.20);
+
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.3);
+    --shadow-glow: 0 0 24px var(--teal-glow), 0 0 48px rgba(45, 212, 191, 0.04);
+
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-mono: 'JetBrains Mono', 'Cascadia Code', 'Fira Code', monospace;
+
+    --transition: 0.2s ease;
+    --transition-slow: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ─── Reset & Base ─── */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 15px;
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: var(--font-sans);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Navigation ─── */
+.navbar {
+    background: rgba(13, 25, 38, 0.90);
+    backdrop-filter: blur(24px) saturate(1.2);
+    -webkit-backdrop-filter: blur(24px) saturate(1.2);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.nav-container {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+}
+
+.nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    text-decoration: none;
+    color: var(--text-primary);
+}
+
+.brand-icon {
+    font-size: 1.3rem;
+    color: var(--teal);
+    filter: drop-shadow(0 0 6px var(--teal-glow));
+}
+
+.brand-text {
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    background: linear-gradient(135deg, var(--teal), var(--amber));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.nav-links {
+    display: flex;
+    gap: 0.15rem;
+}
+
+.nav-link {
+    text-decoration: none;
+    color: var(--text-secondary);
+    padding: 0.45rem 0.95rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.87rem;
+    font-weight: 500;
+    transition: all var(--transition);
+    letter-spacing: 0.01em;
+}
+
+.nav-link:hover {
+    color: var(--text-primary);
+    background: rgba(45, 212, 191, 0.06);
+}
+
+.nav-link.active {
+    color: var(--teal);
+    background: var(--teal-glow);
+    border: 1px solid rgba(45, 212, 191, 0.15);
+}
+
+/* ─── Main Content ─── */
+.main-content {
+    flex: 1;
+    padding: 2rem 0;
+}
+
+.container {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+/* ─── Page Header ─── */
+.page-header {
+    margin-bottom: 2rem;
+}
+
+.page-header h1 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: var(--text-primary);
+    margin-bottom: 0.3rem;
+}
+
+.page-header .subtitle {
+    font-size: 0.92rem;
+    color: var(--text-muted);
+}
+
+/* ─── Metric Cards Grid ─── */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 0.85rem;
+    margin-bottom: 2rem;
+}
+
+.metric-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 1.15rem 1.35rem;
+    transition: all var(--transition-slow);
+    position: relative;
+    overflow: hidden;
+}
+
+.metric-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--teal), transparent);
+    opacity: 0;
+    transition: opacity var(--transition);
+}
+
+.metric-card:hover {
+    background: var(--bg-card-hover);
+    border-color: var(--border-hover);
+    box-shadow: var(--shadow-glow);
+    transform: translateY(-2px);
+}
+
+.metric-card:hover::before {
+    opacity: 1;
+}
+
+.metric-label {
+    font-size: 0.73rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.4rem;
+}
+
+.metric-value {
+    font-size: 1.55rem;
+    font-weight: 700;
+    font-family: var(--font-mono);
+    letter-spacing: -0.02em;
+}
+
+.metric-value.positive { color: var(--positive); }
+.metric-value.negative { color: var(--negative); }
+.metric-value.accent   { color: var(--teal); }
+.metric-value.cyan     { color: var(--amber); }
+
+/* ─── Charts ─── */
+.chart-section {
+    margin-bottom: 1.75rem;
+}
+
+.chart-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.35rem;
+    overflow: hidden;
+    transition: border-color var(--transition);
+}
+
+.chart-card:hover {
+    border-color: var(--border-hover);
+}
+
+.chart-card h3 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+    padding-bottom: 0.7rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.chart-card h3::before {
+    content: '';
+    display: inline-block;
+    width: 3px;
+    height: 14px;
+    background: var(--teal);
+    border-radius: 2px;
+}
+
+.chart-card img {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-sm);
+    display: block;
+}
+
+.charts-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+    margin-bottom: 1.75rem;
+}
+
+/* ─── Data Tables ─── */
+.table-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    margin-bottom: 1.75rem;
+}
+
+.table-card h3 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    padding: 1.15rem 1.35rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.table-card h3::before {
+    content: '';
+    display: inline-block;
+    width: 3px;
+    height: 14px;
+    background: var(--amber);
+    border-radius: 2px;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.data-table thead {
+    background: var(--bg-elevated);
+}
+
+.data-table th {
+    padding: 0.7rem 1.2rem;
+    text-align: left;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+}
+
+.data-table td {
+    padding: 0.7rem 1.2rem;
+    font-size: 0.88rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-secondary);
+}
+
+.data-table tbody tr {
+    transition: background var(--transition);
+}
+
+.data-table tbody tr:hover {
+    background: var(--bg-card-hover);
+}
+
+.data-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.data-table .mono {
+    font-family: var(--font-mono);
+    font-size: 0.83rem;
+}
+
+.data-table .positive { color: var(--positive); }
+.data-table .negative { color: var(--negative); }
+
+/* ─── Badges ─── */
+.badge {
+    display: inline-block;
+    padding: 0.18rem 0.55rem;
+    border-radius: 999px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.badge-sector {
+    background: var(--teal-glow);
+    color: var(--teal);
+    border: 1px solid rgba(45, 212, 191, 0.15);
+}
+
+.badge-positive {
+    background: var(--positive-bg);
+    color: var(--positive);
+}
+
+.badge-negative {
+    background: var(--negative-bg);
+    color: var(--negative);
+}
+
+/* ─── Methodology Page ─── */
+.methodology-content {
+    max-width: 800px;
+}
+
+.methodology-content h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-top: 2.5rem;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.methodology-content h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--teal);
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.methodology-content p {
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+    line-height: 1.8;
+}
+
+.methodology-content ul, .methodology-content ol {
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+}
+
+.methodology-content li {
+    margin-bottom: 0.4rem;
+    line-height: 1.7;
+}
+
+.methodology-content code {
+    font-family: var(--font-mono);
+    font-size: 0.86em;
+    background: var(--bg-elevated);
+    padding: 0.15em 0.45em;
+    border-radius: var(--radius-sm);
+    color: var(--amber);
+}
+
+.formula-block {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--teal);
+    border-radius: var(--radius-sm);
+    padding: 1rem 1.25rem;
+    margin: 1rem 0;
+    font-family: var(--font-mono);
+    font-size: 0.88rem;
+    color: var(--text-primary);
+    line-height: 1.8;
+    overflow-x: auto;
+}
+
+/* ─── Info Cards ─── */
+.info-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 1.15rem 1.35rem;
+    margin-bottom: 0.85rem;
+    transition: border-color var(--transition);
+}
+
+.info-card:hover {
+    border-color: var(--border-hover);
+}
+
+.info-card .info-title {
+    font-weight: 600;
+    color: var(--amber);
+    margin-bottom: 0.3rem;
+    font-size: 0.95rem;
+}
+
+.info-card .info-body {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+}
+
+/* ─── Error State ─── */
+.error-banner {
+    background: var(--negative-bg);
+    border: 1px solid rgba(248, 113, 113, 0.20);
+    border-radius: var(--radius-md);
+    padding: 1rem 1.35rem;
+    margin-bottom: 1.5rem;
+    color: var(--negative);
+    font-size: 0.88rem;
+}
+
+/* ─── Empty State ─── */
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--text-muted);
+}
+
+.empty-state .empty-icon {
+    font-size: 2.8rem;
+    margin-bottom: 1rem;
+    opacity: 0.35;
+}
+
+.empty-state p {
+    font-size: 0.92rem;
+    max-width: 380px;
+    margin: 0 auto;
+    line-height: 1.7;
+}
+
+.empty-state code {
+    font-family: var(--font-mono);
+    background: var(--bg-elevated);
+    padding: 0.2em 0.5em;
+    border-radius: var(--radius-sm);
+    font-size: 0.86em;
+    color: var(--amber);
+}
+
+/* ─── Footer ─── */
+.footer {
+    border-top: 1px solid var(--border);
+    padding: 1.4rem 0;
+    margin-top: 3rem;
+}
+
+.footer-text {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    text-align: center;
+    letter-spacing: 0.02em;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 768px) {
+    .nav-container {
+        padding: 0 1rem;
+    }
+
+    .nav-links {
+        gap: 0;
+    }
+
+    .nav-link {
+        padding: 0.35rem 0.55rem;
+        font-size: 0.8rem;
+    }
+
+    .container {
+        padding: 0 1rem;
+    }
+
+    .metrics-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .charts-row {
+        grid-template-columns: 1fr;
+    }
+
+    .page-header h1 {
+        font-size: 1.35rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .metrics-grid {
+        grid-template-columns: 1fr;
+    }
+}

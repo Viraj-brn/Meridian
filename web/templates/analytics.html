@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block title %}Risk Analytics{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Risk Analytics</h1>
+    <p class="subtitle">Volatility, Value at Risk, drawdown analysis, and factor decomposition</p>
+</div>
+
+{% if error is defined and error %}
+<div class="error-banner">
+    ⚠ {{ error }}
+</div>
+{% endif %}
+
+{% if risk_metrics %}
+<!-- Risk Metrics Grid -->
+<div class="metrics-grid">
+    <div class="metric-card">
+        <div class="metric-label">Annualized Return</div>
+        <div class="metric-value {{ 'positive' if '-' not in risk_metrics.annualized_return else 'negative' }}">{{ risk_metrics.annualized_return }}</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">Annualized Volatility</div>
+        <div class="metric-value cyan">{{ risk_metrics.annualized_vol }}</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">Sharpe Ratio</div>
+        <div class="metric-value accent">{{ risk_metrics.sharpe_ratio }}</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">Sortino Ratio</div>
+        <div class="metric-value accent">{{ risk_metrics.sortino_ratio }}</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">Max Drawdown</div>
+        <div class="metric-value negative">{{ risk_metrics.max_drawdown }}</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">Calmar Ratio</div>
+        <div class="metric-value cyan">{{ risk_metrics.calmar_ratio }}</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">95% Value at Risk</div>
+        <div class="metric-value negative">{{ risk_metrics.var_95 }}</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">95% Conditional VaR</div>
+        <div class="metric-value negative">{{ risk_metrics.cvar_95 }}</div>
+    </div>
+</div>
+
+<!-- Distribution Stats -->
+<div class="metrics-grid" style="margin-bottom: 2rem;">
+    <div class="metric-card">
+        <div class="metric-label">Skewness</div>
+        <div class="metric-value" style="font-size: 1.3rem;">{{ risk_metrics.skewness }}</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">Excess Kurtosis</div>
+        <div class="metric-value" style="font-size: 1.3rem;">{{ risk_metrics.kurtosis }}</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">Positive Days</div>
+        <div class="metric-value positive" style="font-size: 1.3rem;">{{ risk_metrics.positive_days }}</div>
+    </div>
+    {% if risk_metrics.tracking_error is defined %}
+    <div class="metric-card">
+        <div class="metric-label">Tracking Error</div>
+        <div class="metric-value cyan" style="font-size: 1.3rem;">{{ risk_metrics.tracking_error }}</div>
+    </div>
+    {% endif %}
+</div>
+
+{% if risk_metrics.information_ratio is defined %}
+<div class="metrics-grid" style="margin-bottom: 2rem;">
+    <div class="metric-card">
+        <div class="metric-label">Information Ratio</div>
+        <div class="metric-value accent">{{ risk_metrics.information_ratio }}</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">Active Return (Ann.)</div>
+        <div class="metric-value {{ 'positive' if '-' not in risk_metrics.active_return else 'negative' }}">{{ risk_metrics.active_return }}</div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Charts -->
+{% if has_charts %}
+<div class="chart-section">
+    <div class="chart-card">
+        <h3>Rolling Annualized Volatility</h3>
+        <img src="{{ url_for('static', filename='charts/volatility.png') }}" alt="Rolling Volatility">
+    </div>
+</div>
+
+<div class="charts-row">
+    <div class="chart-card">
+        <h3>Factor Variance Attribution (PCA)</h3>
+        <img src="{{ url_for('static', filename='charts/factors.png') }}" alt="Factor Attribution">
+    </div>
+    <div class="chart-card">
+        <h3>Correlation Heatmap</h3>
+        <img src="{{ url_for('static', filename='charts/correlation.png') }}" alt="Correlation Matrix">
+    </div>
+</div>
+{% endif %}
+
+{% else %}
+<div class="chart-card">
+    <div class="empty-state">
+        <div class="empty-icon">📉</div>
+        <p>No analytics data available. Run <code>python main.py --all</code> to compute risk metrics.</p>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

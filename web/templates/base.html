@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Meridian — Market-Cap Weighted Index Tracker with Risk Analytics. A quantitative finance project demonstrating index construction, Barra-style factor analysis, and portfolio risk management.">
+    <title>{% block title %}Meridian{% endblock %} — Index Tracker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-brand">
+                <span class="brand-icon">◈</span>
+                <span class="brand-text">Meridian</span>
+            </a>
+            <div class="nav-links">
+                <a href="/" class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}">Dashboard</a>
+                <a href="/analytics" class="nav-link {% if request.endpoint == 'analytics' %}active{% endif %}">Analytics</a>
+                <a href="/constituents" class="nav-link {% if request.endpoint == 'constituents' %}active{% endif %}">Constituents</a>
+                <a href="/methodology" class="nav-link {% if request.endpoint == 'methodology' %}active{% endif %}">Methodology</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="container">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p class="footer-text">
+                Meridian Index Tracker — Built with Python, Flask, SQLite & matplotlib
+            </p>
+        </div>
+    </footer>
+</body>
+</html>

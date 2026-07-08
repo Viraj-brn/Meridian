@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block title %}Constituents{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Index Constituents</h1>
+    <p class="subtitle">{{ n_stocks }} stocks across {{ n_sectors }} GICS sectors</p>
+</div>
+
+{% if error is defined and error %}
+<div class="error-banner">
+    ⚠ {{ error }}
+</div>
+{% endif %}
+
+{% if has_charts is defined and has_charts %}
+<div class="chart-section">
+    <div class="chart-card">
+        <h3>Top Holdings by Weight</h3>
+        <img src="{{ url_for('static', filename='charts/top_holdings.png') }}" alt="Top Holdings">
+    </div>
+</div>
+{% endif %}
+
+{% if constituents %}
+<div class="table-card">
+    <h3>All Constituents (by Weight)</h3>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Ticker</th>
+                <th>Name</th>
+                <th>Sector</th>
+                <th>Weight</th>
+                <th>Market Cap ($M)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in constituents %}
+            <tr>
+                <td class="mono">{{ loop.index }}</td>
+                <td class="mono" style="font-weight: 600; color: var(--text-primary);">{{ c.ticker }}</td>
+                <td>{{ c.name }}</td>
+                <td><span class="badge badge-sector">{{ c.sector }}</span></td>
+                <td class="mono">{{ "%.3f" | format(c.weight * 100) }}%</td>
+                <td class="mono">{{ "{:,.0f}".format(c.market_cap) }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="chart-card">
+    <div class="empty-state">
+        <div class="empty-icon">📋</div>
+        <p>No constituent data available. Run <code>python main.py --all</code> to build the index.</p>
+    </div>
+</div>
+{% endif %}
+
+<!-- Data Quality Section -->
+{% if anomalies is defined and anomalies %}
+<div class="table-card">
+    <h3>⚠ Price Anomalies Detected (>20% Daily Move)</h3>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Ticker</th>
+                <th>Name</th>
+                <th>Date</th>
+                <th>Price</th>
+                <th>Previous</th>
+                <th>Change</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for a in anomalies %}
+            <tr>
+                <td class="mono" style="font-weight: 600;">{{ a.ticker }}</td>
+                <td>{{ a.name }}</td>
+                <td class="mono">{{ a.trade_date }}</td>
+                <td class="mono">${{ "%.2f" | format(a.close_price) }}</td>
+                <td class="mono">${{ "%.2f" | format(a.prev_close) }}</td>
+                <td class="mono {{ 'positive' if a.pct_change > 0 else 'negative' }}">{{ "%.1f" | format(a.pct_change) }}%</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+{% if data_gaps is defined and data_gaps %}
+<div class="table-card">
+    <h3>📅 Data Gaps (>4 Calendar Days)</h3>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Ticker</th>
+                <th>Gap Start</th>
+                <th>Gap End</th>
+                <th>Gap (Days)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for g in data_gaps %}
+            <tr>
+                <td class="mono" style="font-weight: 600;">{{ g.ticker }}</td>
+                <td class="mono">{{ g.gap_start }}</td>
+                <td class="mono">{{ g.gap_end }}</td>
+                <td class="mono">{{ g.gap_days }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% endblock %}
